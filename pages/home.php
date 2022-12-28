@@ -1,6 +1,14 @@
 <?php 
     
     session_start();
+    // !isset() = is not set
+    // if $_SESSION['home_page_csrf_token'] is not set, generate a new token
+    // when token is already available, we won't regenerate it again
+
+    if ( !isset( $_SESSION['home_page_csrf_token'] ) ) {
+        // generate csrf token
+        $_SESSION['home_page_csrf_token'] = bin2hex( random_bytes(32) );
+      }
 
     $database = new PDO(
         'mysql:host=devkinsta_db;dbname=userauthenticationsystem',
@@ -14,11 +22,21 @@
         $query-> execute();
         $students_00 = $query->fetchAll();
     
-        if(
-            $_SERVER['REQUEST_METHOD'] === 'POST'
-        ){
+        if($_SERVER['REQUEST_METHOD'] === 'POST')
+        {
+
             if ($_POST['action']==='add')
             {
+
+                // verify the csrf token is correct or not
+                if ( $_POST['home_page_csrf_token'] !== $_SESSION['home_page_csrf_token'] )
+                {
+                    die("Nice try! But I'm smarter than you!");
+                }
+                
+                // remove the csrf token from the session data
+                unset( $_SESSION['home_page_csrf_token'] );
+                
                 //add 
                 $statement = $database -> prepare(
                     "INSERT INTO students (`studentsname`) 
@@ -107,6 +125,8 @@
                                 echo " ";
                             }
                         ?>
+                        <input type="hidden" name="home_page_csrf_token"
+                            value="<?php echo $_SESSION['home_page_csrf_token']; ?>" />
                     </form>
                 </div>
                 <!-- add -->
