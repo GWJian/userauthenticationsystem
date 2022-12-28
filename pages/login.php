@@ -27,8 +27,6 @@
         die("Nice try! But I'm smarter than you!");
       }
 
-      // remove the csrf token from the session data
-      unset( $_SESSION['login_form_csrf_token'] );
 
       //Trigger sign-up process
       $email = $_POST['email'];
@@ -56,6 +54,9 @@
             'id' => $user['id'],
             'email' => $user['email']
           ];
+
+          // remove the csrf token from the session data
+           unset( $_SESSION['login_form_csrf_token'] );
 
           //redirect user back to index
           header('location: /');

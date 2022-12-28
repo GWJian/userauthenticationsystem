@@ -26,8 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     die("Nice try! But I'm smarter than you!");
     }
 
-    // remove the csrf token from the session data
-    unset( $_SESSION['signup_form_csrf_token'] );
+
       
     // trigger sign up process
     $email = $_POST['email'];
@@ -50,7 +49,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'email' => $email,
         'password' => password_hash ($password, PASSWORD_DEFAULT)
     ]);
+
+    
+    // remove the csrf token from the session data
+    unset( $_SESSION['signup_form_csrf_token'] );
+
     header('Location: /login');
+
     exit;
     }
 }
